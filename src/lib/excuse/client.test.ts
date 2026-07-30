@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { ExcuseError, generateExcuse } from "@/lib/excuse/client";
 import type { MessagesClient } from "@/lib/excuse/client";
-import { MAX_TOKENS, MODEL } from "@/lib/config";
+import { EFFORT, MAX_TOKENS, MODEL, THINKING_MODE } from "@/lib/config";
 
 const VALID_OUTPUT = {
   excuse: "Лифт застрял между этажами",
@@ -39,10 +39,19 @@ describe("generateExcuse", () => {
       model: string;
       max_tokens: number;
       system: string;
+      thinking: { type: string };
+      output_config: { effort: string; format: unknown };
     };
     expect(params.model).toBe(MODEL);
     expect(params.max_tokens).toBe(MAX_TOKENS);
     expect(params.system).not.toContain("опоздал");
+    expect(params.thinking.type).toBe(THINKING_MODE);
+    expect(params.output_config.effort).toBe(EFFORT);
+    expect(params.output_config.format).toBeDefined();
+  });
+
+  it("adaptive-размышление требует запаса max_tokens", () => {
+    expect(THINKING_MODE === "disabled" || MAX_TOKENS >= 2000).toBe(true);
   });
 
   it("бросает refusal при stop_reason refusal", async () => {

@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import type { MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/messages";
 import { EFFORT, MAX_TOKENS, MODEL, THINKING_MODE } from "@/lib/config";
 import { buildPrompt } from "@/lib/excuse/prompt";
 import {
@@ -27,7 +28,7 @@ interface ParseResponse {
 
 export interface MessagesClient {
   messages: {
-    parse: (params: Record<string, unknown>) => Promise<ParseResponse>;
+    parse: (params: MessageCreateParamsNonStreaming) => Promise<ParseResponse>;
   };
 }
 
