@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Генератор отмазок
 
-## Getting Started
+Одностраничный сервис: описываешь ситуацию, получаешь отмазку с оценкой
+правдоподобности.
 
-First, run the development server:
+## Запуск локально
 
 ```bash
+npm install
+cp .env.example .env.local   # вписать ANTHROPIC_API_KEY
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Без переменных Upstash лимиты считаются в памяти процесса — для локальной
+разработки этого достаточно. На продакшене их отсутствие приводит к отказу:
+сервис не станет обращаться к платному API без работающего лимитера.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Тесты
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+npx tsc --noEmit
+```
 
-## Learn More
+## Переменные окружения
 
-To learn more about Next.js, take a look at the following resources:
+| Переменная | Обязательна | Назначение |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | да | Доступ к модели. Только на сервере. |
+| `KV_REST_API_URL` | на проде | Upstash Redis для лимитов |
+| `KV_REST_API_TOKEN` | на проде | Upstash Redis для лимитов |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Пороги
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Все лимиты и тексты ошибок — в `src/lib/config.ts`.
 
-## Deploy on Vercel
+## Документы
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Дизайн: `docs/superpowers/specs/2026-07-30-excuse-generator-design.md`
+- План: `docs/superpowers/plans/2026-07-30-excuse-generator.md`
