@@ -34,6 +34,11 @@ export function getKv(): KvStore {
     process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN ?? "";
 
   if (!url || !token) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "Upstash Redis не настроен: лимиты не работают, вызовы модели запрещены",
+      );
+    }
     console.warn(
       "Upstash Redis не настроен — лимиты работают в памяти процесса и на Vercel не действуют",
     );
@@ -47,4 +52,8 @@ export function getKv(): KvStore {
     expire: (key, seconds) => redis.expire(key, seconds),
   };
   return cached;
+}
+
+export function resetKvCacheForTests(): void {
+  cached = null;
 }
