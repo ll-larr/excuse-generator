@@ -20,6 +20,32 @@ export const MADNESS_MIN = 1;
 export const MADNESS_MAX = 5;
 export const MADNESS_DEFAULT = 3;
 
+export const MADNESS_HINTS: Record<number, string> = {
+  1: "Реально могло произойти, но не произошло. Не клише, а живое событие; можно с деталями, которые легко подтвердить.",
+  2: "Тоже могло произойти, но подтверждений нет.",
+  3: "Теоретически возможно, но слышно, что придумано на ходу.",
+  4: "Вымысел, местами звучит как абсурд.",
+  5: "Полный абсурд: чтобы собеседник посмеялся, а не поверил.",
+};
+
+/** Коридоры правдоподобности по уровням: не пересекаются, идут вниз. */
+export const PLAUSIBILITY_RANGES: Record<number, readonly [number, number]> = {
+  1: [85, 100],
+  2: [65, 84],
+  3: [40, 64],
+  4: [15, 39],
+  5: [0, 14],
+};
+
+export const CHANNELS = ["sms", "live"] as const;
+export type Channel = (typeof CHANNELS)[number];
+export const CHANNEL_DEFAULT: Channel = "sms";
+
+export const CHANNEL_LABELS: Record<Channel, string> = {
+  sms: "в смс",
+  live: "вживую",
+};
+
 export const RATE_LIMIT_HOURLY = 10;
 export const RATE_LIMIT_DAILY = 40;
 export const GLOBAL_DAILY_BUDGET = 1000;
