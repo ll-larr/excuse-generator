@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { ExcuseCard } from "@/components/ExcuseCard";
 import {
+  CHANNELS,
+  CHANNEL_DEFAULT,
+  CHANNEL_LABELS,
   ERROR_MESSAGES,
   MADNESS_DEFAULT,
+  MADNESS_HINTS,
   MADNESS_MAX,
   MADNESS_MIN,
   MAX_SITUATION_LENGTH,
   SITUATION_PRESETS,
+  type Channel,
 } from "@/lib/config";
 import { ExcuseSchema } from "@/lib/excuse/schema";
 import type { Excuse } from "@/lib/excuse/schema";
@@ -16,6 +21,7 @@ import type { Excuse } from "@/lib/excuse/schema";
 export function ExcuseForm() {
   const [situation, setSituation] = useState("");
   const [madness, setMadness] = useState(MADNESS_DEFAULT);
+  const [channel, setChannel] = useState<Channel>(CHANNEL_DEFAULT);
   const [excuse, setExcuse] = useState<Excuse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +40,7 @@ export function ExcuseForm() {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ situation: situation.trim(), madness }),
+        body: JSON.stringify({ situation: situation.trim(), madness, channel }),
       });
       const body = await response.json();
 
@@ -87,6 +93,28 @@ export function ExcuseForm() {
         {situation.length} / {MAX_SITUATION_LENGTH}
       </p>
 
+      <fieldset className="mt-4">
+        <legend className="text-sm">Как отмазываешься</legend>
+        <div className="mt-1 flex gap-2">
+          {CHANNELS.map((value) => (
+            <label
+              key={value}
+              className="cursor-pointer rounded-full border px-3 py-1 text-sm"
+            >
+              <input
+                type="radio"
+                name="channel"
+                value={value}
+                checked={channel === value}
+                onChange={() => setChannel(value)}
+                className="mr-2"
+              />
+              {CHANNEL_LABELS[value]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <label htmlFor="madness" className="mt-4 block text-sm">
         Уровень безумия: {madness}
       </label>
@@ -99,6 +127,7 @@ export function ExcuseForm() {
         onChange={(event) => setMadness(Number(event.target.value))}
         className="mt-1 w-full"
       />
+      <p className="mt-1 text-xs opacity-70">{MADNESS_HINTS[madness]}</p>
 
       <button
         type="button"
