@@ -53,6 +53,32 @@ describe("GenerateRequestSchema", () => {
     const result = GenerateRequestSchema.safeParse({ situation: "проспал", madness });
     expect(result.success).toBe(true);
   });
+
+  it("подставляет канал по умолчанию", () => {
+    const parsed = GenerateRequestSchema.parse({
+      situation: "опоздал",
+      madness: 3,
+    });
+    expect(parsed.channel).toBe("sms");
+  });
+
+  it.each(["sms", "live"] as const)("принимает канал %s", (channel) => {
+    const parsed = GenerateRequestSchema.parse({
+      situation: "опоздал",
+      madness: 3,
+      channel,
+    });
+    expect(parsed.channel).toBe(channel);
+  });
+
+  it("отвергает неизвестный канал", () => {
+    const result = GenerateRequestSchema.safeParse({
+      situation: "опоздал",
+      madness: 3,
+      channel: "telepathy",
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("ExcuseSchema", () => {

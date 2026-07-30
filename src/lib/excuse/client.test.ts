@@ -22,7 +22,7 @@ describe("generateExcuse", () => {
       parsed_output: VALID_OUTPUT,
     });
     const result = await generateExcuse(
-      { situation: "опоздал", madness: 3 },
+      { situation: "опоздал", madness: 3, channel: "sms" },
       client,
     );
     expect(result).toEqual(VALID_OUTPUT);
@@ -33,7 +33,7 @@ describe("generateExcuse", () => {
       stop_reason: "end_turn",
       parsed_output: VALID_OUTPUT,
     });
-    await generateExcuse({ situation: "опоздал", madness: 3 }, client);
+    await generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client);
 
     const params = vi.mocked(client.messages.parse).mock.calls[0][0] as {
       model: string;
@@ -57,14 +57,14 @@ describe("generateExcuse", () => {
   it("бросает refusal при stop_reason refusal", async () => {
     const client = fakeClient({ stop_reason: "refusal", parsed_output: null });
     await expect(
-      generateExcuse({ situation: "опоздал", madness: 3 }, client),
+      generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client),
     ).rejects.toMatchObject({ kind: "refusal" });
   });
 
   it("бросает unparsable при пустом parsed_output", async () => {
     const client = fakeClient({ stop_reason: "end_turn", parsed_output: null });
     await expect(
-      generateExcuse({ situation: "опоздал", madness: 3 }, client),
+      generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client),
     ).rejects.toMatchObject({ kind: "unparsable" });
   });
 
@@ -74,7 +74,7 @@ describe("generateExcuse", () => {
       parsed_output: { excuse: "текст", plausibility: 999, risk_note: "х" },
     });
     await expect(
-      generateExcuse({ situation: "опоздал", madness: 3 }, client),
+      generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client),
     ).rejects.toMatchObject({ kind: "unparsable" });
   });
 
@@ -84,7 +84,7 @@ describe("generateExcuse", () => {
       messages: { parse: vi.fn().mockRejectedValue(new Error("ECONNRESET")) },
     } as unknown as MessagesClient;
     await expect(
-      generateExcuse({ situation: "опоздал", madness: 3 }, client),
+      generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client),
     ).rejects.toMatchObject({ kind: "upstream" });
     errorSpy.mockRestore();
   });
@@ -92,7 +92,7 @@ describe("generateExcuse", () => {
   it("бросает именно ExcuseError", async () => {
     const client = fakeClient({ stop_reason: "refusal", parsed_output: null });
     await expect(
-      generateExcuse({ situation: "опоздал", madness: 3 }, client),
+      generateExcuse({ situation: "опоздал", madness: 3, channel: "sms" }, client),
     ).rejects.toBeInstanceOf(ExcuseError);
   });
 });
