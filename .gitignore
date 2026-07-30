@@ -43,3 +43,8 @@ next-env.d.ts
 
 # project
 .superpowers/
+
+# graphify: служебные файлы окружения
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/cost.json
