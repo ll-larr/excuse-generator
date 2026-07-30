@@ -7,6 +7,7 @@ import {
 import { GenerateRequestSchema } from "@/lib/excuse/schema";
 import { getKv } from "@/lib/kv";
 import { checkLimits } from "@/lib/limits";
+import type { LimitResult } from "@/lib/limits";
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,12 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: ERROR_MESSAGES.invalid_input }, 400);
   }
 
-  const limit = await checkLimits(getKv(), clientIp(request));
+  let limit: LimitResult;
+  try {
+    limit = await checkLimits(getKv(), clientIp(request));
+  } catch {
+    return json({ error: ERROR_MESSAGES.budget_exhausted }, 503);
+  }
   if (!limit.ok) {
     if (limit.reason === "global_daily") {
       return json({ error: ERROR_MESSAGES.budget_exhausted }, 503);

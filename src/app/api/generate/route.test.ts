@@ -35,6 +35,14 @@ function post(body: unknown): Request {
   });
 }
 
+function postWithHeaders(headers: Record<string, string>): Request {
+  return new Request("http://localhost/api/generate", {
+    method: "POST",
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify({ situation: "опоздал", madness: 3 }),
+  });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   checkLimitsMock.mockResolvedValue({ ok: true });
@@ -123,5 +131,35 @@ describe("POST /api/generate", () => {
     });
     await POST(post({ situation: "опоздал", madness: 3 }));
     expect(generateExcuseMock).not.toHaveBeenCalled();
+  });
+
+  it("возвращает 503, когда хранилище лимитов недоступно", async () => {
+    checkLimitsMock.mockRejectedValue(new Error("redis down"));
+    const response = await POST(post({ situation: "опоздал", madness: 3 }));
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({
+      error: ERROR_MESSAGES.budget_exhausted,
+    });
+  });
+
+  it("не вызывает модель, когда хранилище лимитов недоступно", async () => {
+    checkLimitsMock.mockRejectedValue(new Error("redis down"));
+    await POST(post({ situation: "опоздал", madness: 3 }));
+    expect(generateExcuseMock).not.toHaveBeenCalled();
+  });
+
+  it("берёт первый адрес из списка x-forwarded-for", async () => {
+    await POST(postWithHeaders({ "x-forwarded-for": "1.1.1.1, 2.2.2.2, 3.3.3.3" }));
+    expect(checkLimitsMock).toHaveBeenCalledWith(expect.anything(), "1.1.1.1");
+  });
+
+  it("падает обратно на x-real-ip, когда x-forwarded-for отсутствует", async () => {
+    await POST(postWithHeaders({ "x-real-ip": "9.9.9.9" }));
+    expect(checkLimitsMock).toHaveBeenCalledWith(expect.anything(), "9.9.9.9");
+  });
+
+  it("использует unknown, когда заголовков с адресом нет", async () => {
+    await POST(postWithHeaders({}));
+    expect(checkLimitsMock).toHaveBeenCalledWith(expect.anything(), "unknown");
   });
 });
