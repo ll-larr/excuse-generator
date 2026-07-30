@@ -150,13 +150,18 @@
     "semantic_hash": "13fc1ffce9972e6a765b48485695a6d4"
   },
   "docs/superpowers/plans/2026-07-30-excuse-generator.md": {
-    "mtime": 1785412955.3261979,
-    "ast_hash": "6b2ab9c168c1b5f27f482836315a34cd",
-    "semantic_hash": "6b2ab9c168c1b5f27f482836315a34cd"
+    "mtime": 1785437991.2287014,
+    "ast_hash": "16d3bd8a5f3149a023292c9b8ee120e9",
+    "semantic_hash": "16d3bd8a5f3149a023292c9b8ee120e9"
   },
   "docs/superpowers/specs/2026-07-30-excuse-generator-design.md": {
-    "mtime": 1785412353.259595,
-    "ast_hash": "45b7328740fd78e51c76778844db087c",
-    "semantic_hash": "45b7328740fd78e51c76778844db087c"
+    "mtime": 1785437955.1296036,
+    "ast_hash": "3d4642a9505450b9c89090d9055aee6a",
+    "semantic_hash": "3d4642a9505450b9c89090d9055aee6a"
+  },
+  "docs/superpowers/plans/2026-07-30-session-handoff-tasks-9-10.md": {
+    "mtime": 1785434179.9786556,
+    "ast_hash": "2227b2b8ce0d2c4fe47c3cd419bf7318",
+    "semantic_hash": "2227b2b8ce0d2c4fe47c3cd419bf7318"
   }
 }
