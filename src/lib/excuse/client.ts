@@ -60,6 +60,14 @@ export async function generateExcuse(
       messages: [{ role: "user", content: userMessage }],
     });
   } catch (cause) {
+    const status =
+      typeof cause === "object" && cause !== null && "status" in cause
+        ? (cause as { status?: unknown }).status
+        : undefined;
+    console.error("anthropic request failed", {
+      name: cause instanceof Error ? cause.name : typeof cause,
+      status,
+    });
     throw new ExcuseError("upstream", "Anthropic вернул ошибку");
   }
 

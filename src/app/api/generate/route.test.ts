@@ -162,4 +162,14 @@ describe("POST /api/generate", () => {
     await POST(postWithHeaders({}));
     expect(checkLimitsMock).toHaveBeenCalledWith(expect.anything(), "unknown");
   });
+
+  it("предпочитает x-vercel-forwarded-for подделываемому x-forwarded-for", async () => {
+    await POST(
+      postWithHeaders({
+        "x-vercel-forwarded-for": "5.5.5.5",
+        "x-forwarded-for": "1.1.1.1",
+      }),
+    );
+    expect(checkLimitsMock).toHaveBeenCalledWith(expect.anything(), "5.5.5.5");
+  });
 });

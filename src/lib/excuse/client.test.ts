@@ -70,12 +70,14 @@ describe("generateExcuse", () => {
   });
 
   it("оборачивает сетевую ошибку SDK в upstream", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const client = {
       messages: { parse: vi.fn().mockRejectedValue(new Error("ECONNRESET")) },
     } as unknown as MessagesClient;
     await expect(
       generateExcuse({ situation: "опоздал", madness: 3 }, client),
     ).rejects.toMatchObject({ kind: "upstream" });
+    errorSpy.mockRestore();
   });
 
   it("бросает именно ExcuseError", async () => {
