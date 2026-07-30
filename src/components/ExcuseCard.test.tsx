@@ -37,4 +37,15 @@ describe("ExcuseCard", () => {
 
     expect(await screen.findByText(/скопировано/i)).toBeInTheDocument();
   });
+
+  it("сообщает, когда скопировать не удалось", async () => {
+    Object.assign(navigator, {
+      clipboard: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
+    });
+
+    render(<ExcuseCard excuse={EXCUSE} />);
+    await userEvent.click(screen.getByRole("button", { name: /скопировать/i }));
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+  });
 });

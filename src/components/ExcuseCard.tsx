@@ -1,15 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { ERROR_MESSAGES } from "@/lib/config";
 import type { Excuse } from "@/lib/excuse/schema";
 
 export function ExcuseCard({ excuse }: { excuse: Excuse }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   async function copy() {
-    await navigator.clipboard.writeText(excuse.excuse);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(excuse.excuse);
+      setCopyFailed(false);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+      setCopyFailed(true);
+    }
   }
 
   return (
@@ -35,6 +43,11 @@ export function ExcuseCard({ excuse }: { excuse: Excuse }) {
         Скопировать
       </button>
       {copied && <span className="ml-3 text-sm">Скопировано</span>}
+      {copyFailed && (
+        <span role="alert" className="ml-3 text-sm">
+          {ERROR_MESSAGES.copy_failed}
+        </span>
+      )}
     </section>
   );
 }

@@ -10,6 +10,7 @@ import {
   MAX_SITUATION_LENGTH,
   SITUATION_PRESETS,
 } from "@/lib/config";
+import { ExcuseSchema } from "@/lib/excuse/schema";
 import type { Excuse } from "@/lib/excuse/schema";
 
 export function ExcuseForm() {
@@ -41,7 +42,13 @@ export function ExcuseForm() {
         setError(body.error ?? ERROR_MESSAGES.upstream);
         return;
       }
-      setExcuse(body as Excuse);
+
+      const parsed = ExcuseSchema.safeParse(body);
+      if (!parsed.success) {
+        setError(ERROR_MESSAGES.upstream);
+        return;
+      }
+      setExcuse(parsed.data);
     } catch {
       setError(ERROR_MESSAGES.upstream);
     } finally {
@@ -102,7 +109,11 @@ export function ExcuseForm() {
         {loading ? "Выдумываю…" : "Придумать"}
       </button>
 
-      {error && <p className="mt-4 text-sm">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-4 text-sm">
+          {error}
+        </p>
+      )}
       {excuse && <ExcuseCard excuse={excuse} />}
     </div>
   );

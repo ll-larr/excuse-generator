@@ -32,7 +32,8 @@ export type ErrorKey =
   | "rate_limited"
   | "budget_exhausted"
   | "upstream"
-  | "refusal";
+  | "refusal"
+  | "copy_failed";
 
 export const ERROR_MESSAGES: Record<ErrorKey, string> = {
   invalid_input: "Опиши ситуацию, до 200 символов",
@@ -40,4 +41,5 @@ export const ERROR_MESSAGES: Record<ErrorKey, string> = {
   budget_exhausted: "На сегодня отмазки кончились",
   upstream: "Не выдумывается. Попробуй ещё раз",
   refusal: "Такое придумать не могу",
+  copy_failed: "Не удалось скопировать — выдели текст и скопируй вручную",
 };
