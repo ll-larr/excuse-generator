@@ -73,4 +73,13 @@ describe("ExcuseSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it.each([0, 100])("принимает граничный plausibility = %s", (plausibility) => {
+    const result = ExcuseSchema.safeParse({
+      excuse: "текст",
+      plausibility,
+      risk_note: "заметка",
+    });
+    expect(result.success).toBe(true);
+  });
 });
