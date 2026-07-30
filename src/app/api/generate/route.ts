@@ -42,7 +42,11 @@ export async function POST(request: Request): Promise<Response> {
   let limit: LimitResult;
   try {
     limit = await checkLimits(getKv(), clientIp(request));
-  } catch {
+  } catch (cause) {
+    console.error("limits store unavailable", {
+      name: cause instanceof Error ? cause.name : typeof cause,
+      message: cause instanceof Error ? cause.message : undefined,
+    });
     return json({ error: ERROR_MESSAGES.budget_exhausted }, 503);
   }
   if (!limit.ok) {

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RATE_LIMIT_HOURLY } from "@/lib/config";
+import { resetKvCacheForTests } from "@/lib/kv";
 
 const generateExcuseMock = vi.fn();
 
@@ -32,13 +33,15 @@ function post(ip: string): Request {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetKvCacheForTests();
   vi.spyOn(console, "warn").mockImplementation(() => {});
+  vi.spyOn(console, "error").mockImplementation(() => {});
   generateExcuseMock.mockResolvedValue(VALID_OUTPUT);
 });
 
 describe("POST /api/generate со сквозными лимитами", () => {
   it("пропускает первые RATE_LIMIT_HOURLY запросов и режет следующий", async () => {
-    const ip = `10.1.${Math.floor(Math.random() * 200)}.${Math.floor(Math.random() * 200)}`;
+    const ip = "10.1.0.1";
 
     for (let i = 0; i < RATE_LIMIT_HOURLY; i++) {
       const response = await POST(post(ip));
