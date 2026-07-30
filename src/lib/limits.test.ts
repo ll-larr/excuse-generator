@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createMemoryKv } from "@/lib/kv";
+import type { KvStore } from "@/lib/kv";
 import { checkLimits } from "@/lib/limits";
 import {
   GLOBAL_DAILY_BUDGET,
@@ -8,6 +9,32 @@ import {
 } from "@/lib/config";
 
 const NOW = new Date("2026-07-30T12:30:00Z");
+
+function trackingKv(): {
+  kv: KvStore;
+  incrCalls: string[];
+  expireCalls: string[];
+} {
+  const counters = new Map<string, number>();
+  const incrCalls: string[] = [];
+  const expireCalls: string[] = [];
+  return {
+    kv: {
+      async incr(key) {
+        incrCalls.push(key);
+        const next = (counters.get(key) ?? 0) + 1;
+        counters.set(key, next);
+        return next;
+      },
+      async expire(key) {
+        expireCalls.push(key);
+        return 1;
+      },
+    },
+    incrCalls,
+    expireCalls,
+  };
+}
 
 describe("checkLimits", () => {
   it("пропускает первый запрос", async () => {
@@ -82,5 +109,62 @@ describe("checkLimits", () => {
     const result = await checkLimits(kv, "1.1.1.1", NOW);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.retryAfterSeconds).toBeGreaterThan(0);
+  });
+
+  it("ставит TTL ровно один раз на ключ, при первом инкременте", async () => {
+    const { kv, expireCalls } = trackingKv();
+    await checkLimits(kv, "1.1.1.1", NOW);
+    await checkLimits(kv, "1.1.1.1", NOW);
+    await checkLimits(kv, "1.1.1.1", NOW);
+
+    expect(expireCalls).toHaveLength(3);
+    expect(expireCalls.filter((key) => key.startsWith("rl:h:"))).toHaveLength(1);
+    expect(expireCalls.filter((key) => key.startsWith("rl:d:"))).toHaveLength(1);
+    expect(expireCalls.filter((key) => key.startsWith("budget:"))).toHaveLength(1);
+  });
+
+  it("не тратит глобальный бюджет на запрос, отклонённый часовым лимитом IP", async () => {
+    const { kv, incrCalls } = trackingKv();
+    for (let i = 0; i < RATE_LIMIT_HOURLY; i++) {
+      await checkLimits(kv, "1.1.1.1", NOW);
+    }
+    const budgetBefore = incrCalls.filter((key) =>
+      key.startsWith("budget:"),
+    ).length;
+
+    const result = await checkLimits(kv, "1.1.1.1", NOW);
+
+    const budgetAfter = incrCalls.filter((key) =>
+      key.startsWith("budget:"),
+    ).length;
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reason).toBe("ip_hourly");
+    expect(budgetAfter).toBe(budgetBefore);
+  });
+
+  it("не тратит глобальный бюджет на запрос, отклонённый суточным лимитом IP", async () => {
+    const { kv, incrCalls } = trackingKv();
+    let hour = 0;
+    for (let i = 0; i < RATE_LIMIT_DAILY; i++) {
+      if (i > 0 && i % RATE_LIMIT_HOURLY === 0) hour++;
+      const at = new Date(`2026-07-30T${String(hour).padStart(2, "0")}:00:00Z`);
+      await checkLimits(kv, "1.1.1.1", at);
+    }
+    const budgetBefore = incrCalls.filter((key) =>
+      key.startsWith("budget:"),
+    ).length;
+
+    const result = await checkLimits(
+      kv,
+      "1.1.1.1",
+      new Date("2026-07-30T20:00:00Z"),
+    );
+
+    const budgetAfter = incrCalls.filter((key) =>
+      key.startsWith("budget:"),
+    ).length;
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reason).toBe("ip_daily");
+    expect(budgetAfter).toBe(budgetBefore);
   });
 });
