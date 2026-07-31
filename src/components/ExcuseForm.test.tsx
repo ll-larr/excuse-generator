@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExcuseForm } from "@/components/ExcuseForm";
-import { MADNESS_DEFAULT } from "@/lib/config";
+import { MADNESS_DEFAULT, MADNESS_HINTS } from "@/lib/config";
 
 const EXCUSE = {
   excuse: "Лифт застрял",
@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe("ExcuseForm", () => {
-  it("отправляет введённую ситуацию и уровень безумия", async () => {
+  it("отправляет введённую ситуацию, уровень безумия и канал", async () => {
     render(<ExcuseForm />);
     await userEvent.type(screen.getByLabelText(/ситуация/i), "проспал");
     await userEvent.click(screen.getByRole("button", { name: /придумать/i }));
@@ -35,7 +35,30 @@ describe("ExcuseForm", () => {
     expect(JSON.parse(String(init?.body))).toEqual({
       situation: "проспал",
       madness: MADNESS_DEFAULT,
+      channel: "sms",
     });
+  });
+
+  it("отправляет выбранный канал", async () => {
+    render(<ExcuseForm />);
+    await userEvent.type(screen.getByLabelText(/ситуация/i), "проспал");
+    await userEvent.click(screen.getByLabelText(/вживую/i));
+    await userEvent.click(screen.getByRole("button", { name: /придумать/i }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    const [, init] = vi.mocked(fetch).mock.calls[0];
+    expect(JSON.parse(String(init?.body)).channel).toBe("live");
+  });
+
+  it("показывает описание выбранного уровня", async () => {
+    render(<ExcuseForm />);
+    expect(screen.getByText(MADNESS_HINTS[MADNESS_DEFAULT])).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/уровень безумия/i), {
+      target: { value: "5" },
+    });
+
+    expect(await screen.findByText(MADNESS_HINTS[5])).toBeInTheDocument();
   });
 
   it("показывает отмазку после успешного ответа", async () => {

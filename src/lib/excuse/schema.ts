@@ -1,9 +1,16 @@
 import { z } from "zod";
-import { MADNESS_MAX, MADNESS_MIN, MAX_SITUATION_LENGTH } from "@/lib/config";
+import {
+  CHANNELS,
+  CHANNEL_DEFAULT,
+  MADNESS_MAX,
+  MADNESS_MIN,
+  MAX_SITUATION_LENGTH,
+} from "@/lib/config";
 
 export const GenerateRequestSchema = z.object({
   situation: z.string().trim().min(1).max(MAX_SITUATION_LENGTH),
   madness: z.number().int().min(MADNESS_MIN).max(MADNESS_MAX),
+  channel: z.enum(CHANNELS).default(CHANNEL_DEFAULT),
 });
 
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
