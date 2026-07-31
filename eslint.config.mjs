@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Исходники дизайна, перенесённые в src/: в сборку не входят.
+    "handoff/**",
   ]),
 ]);
 

@@ -48,3 +48,6 @@ next-env.d.ts
 graphify-out/.graphify_python
 graphify-out/.graphify_root
 graphify-out/cost.json
+
+# исходники дизайна: перенесены в src/
+handoff/
