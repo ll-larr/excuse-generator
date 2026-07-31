@@ -3,6 +3,8 @@ import {
   CHANNELS,
   CHANNEL_DEFAULT,
   CHANNEL_LABELS,
+  LOADING_CHATTER,
+  MADNESS_EMOJI,
   MADNESS_HINTS,
   MADNESS_MAX,
   MADNESS_MIN,
@@ -30,6 +32,15 @@ describe("константы уровней", () => {
     }
   });
 
+  it("даёт каждому уровню смайлик", () => {
+    for (const level of LEVELS) {
+      expect(MADNESS_EMOJI[level]).toBeTruthy();
+    }
+    expect(Object.keys(MADNESS_EMOJI)).toHaveLength(
+      MADNESS_MAX - MADNESS_MIN + 1,
+    );
+  });
+
   it("коридоры идут вниз и не пересекаются", () => {
     for (const level of [2, 3, 4, 5]) {
       const [previousMin] = PLAUSIBILITY_RANGES[level - 1];
@@ -49,5 +60,14 @@ describe("константы каналов", () => {
 
   it("по умолчанию отмазка идёт в смс", () => {
     expect(CHANNEL_DEFAULT).toBe("sms");
+  });
+});
+
+describe("реплики ожидания", () => {
+  it("есть и все непустые", () => {
+    expect(LOADING_CHATTER.length).toBeGreaterThan(1);
+    for (const line of LOADING_CHATTER) {
+      expect(line.trim()).toBeTruthy();
+    }
   });
 });

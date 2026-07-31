@@ -7,7 +7,9 @@ import {
   CHANNEL_DEFAULT,
   CHANNEL_LABELS,
   ERROR_MESSAGES,
+  LOADING_CHATTER,
   MADNESS_DEFAULT,
+  MADNESS_EMOJI,
   MADNESS_HINTS,
   MADNESS_MAX,
   MADNESS_MIN,
@@ -17,23 +19,6 @@ import {
 } from "@/lib/config";
 import { ExcuseSchema } from "@/lib/excuse/schema";
 import type { Excuse } from "@/lib/excuse/schema";
-
-/** Смайлик на бегунке — по уровню безумия. Только оформление. */
-const MADNESS_EMOJI: Record<number, string> = {
-  1: "😇",
-  2: "🙂",
-  3: "🤨",
-  4: "🤪",
-  5: "🤡",
-};
-
-/** Реплики на время ожидания: запрос идёт 4–7 секунд. */
-const LOADING_CHATTER = [
-  "Сверяю версию с реальностью…",
-  "Ищу свидетелей, которых не было…",
-  "Подгоняю детали под уровень безумия…",
-  "Проверяю, звучит ли это вслух…",
-];
 
 const pill =
   "cursor-pointer rounded-full border-2 border-line px-3.5 py-2.5 text-sm font-medium shadow-[0_2px_0_var(--line)] transition hover:-translate-y-px hover:shadow-[0_4px_0_var(--line)] active:translate-y-0.5 active:shadow-[0_1px_0_var(--line)]";
@@ -104,6 +89,7 @@ export function ExcuseForm() {
             <button
               key={preset}
               type="button"
+              aria-pressed={situation === preset}
               onClick={() => setSituation(preset)}
               className={`${pill} ${situation === preset ? "bg-accent text-[#141210]" : "bg-background"}`}
             >
@@ -194,7 +180,10 @@ export function ExcuseForm() {
         </button>
 
         {loading && (
-          <div className="mt-4 rounded-2xl border-2 border-dashed border-line bg-background p-3.5">
+          <div
+            role="status"
+            className="mt-4 rounded-2xl border-2 border-dashed border-line bg-background p-3.5"
+          >
             <div className="flex items-center gap-2.5">
               <span aria-hidden="true" className="anim-wobble inline-block text-[22px]">
                 {MADNESS_EMOJI[madness]}
@@ -220,7 +209,8 @@ export function ExcuseForm() {
       </div>
 
       {/* ── Рельс результата: на десктопе справа и липкий, на узких — под формой ── */}
-      <aside className="lg:sticky lg:top-8">
+      {/* Живая область смонтирована всегда: иначе появление карточки нечего объявлять. */}
+      <aside aria-live="polite" className="lg:sticky lg:top-8">
         {excuse ? (
           <ExcuseCard excuse={excuse} madness={madness} channel={channel} />
         ) : (

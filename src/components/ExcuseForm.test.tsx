@@ -50,6 +50,28 @@ describe("ExcuseForm", () => {
     expect(JSON.parse(String(init?.body)).channel).toBe("live");
   });
 
+  it("помечает выбранный пресет для скринридера", async () => {
+    render(<ExcuseForm />);
+    const preset = screen.getByRole("button", { name: "опоздал на работу" });
+    expect(preset).toHaveAttribute("aria-pressed", "false");
+
+    await userEvent.click(preset);
+    expect(preset).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("объявляет появление отмазки", async () => {
+    render(<ExcuseForm />);
+    expect(screen.getByRole("complementary")).toHaveAttribute(
+      "aria-live",
+      "polite",
+    );
+
+    await userEvent.type(screen.getByLabelText(/ситуация/i), "проспал");
+    await userEvent.click(screen.getByRole("button", { name: /придумать/i }));
+
+    expect(await screen.findByText(EXCUSE.excuse)).toBeInTheDocument();
+  });
+
   it("показывает описание выбранного уровня", async () => {
     render(<ExcuseForm />);
     expect(screen.getByText(MADNESS_HINTS[MADNESS_DEFAULT])).toBeInTheDocument();
