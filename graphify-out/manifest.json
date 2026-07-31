@@ -55,19 +55,19 @@
     "semantic_hash": "efd6ae7fc507b6f6653246dae9d69baf"
   },
   "src/components/ExcuseForm.test.tsx": {
-    "mtime": 1785486570.3322594,
-    "ast_hash": "81df4555abbc656bf27292fa787ba6ad",
-    "semantic_hash": "81df4555abbc656bf27292fa787ba6ad"
+    "mtime": 1785489386.3966374,
+    "ast_hash": "10710629658d01b5ef749eb6c08558f7",
+    "semantic_hash": "10710629658d01b5ef749eb6c08558f7"
   },
   "src/components/ExcuseForm.tsx": {
-    "mtime": 1785488339.377878,
-    "ast_hash": "e14a64a837ca425fc7bb564f48429bc0",
-    "semantic_hash": "e14a64a837ca425fc7bb564f48429bc0"
+    "mtime": 1785489449.8069177,
+    "ast_hash": "20874b2921f82378147c1de4e89a3876",
+    "semantic_hash": "20874b2921f82378147c1de4e89a3876"
   },
   "src/lib/config.ts": {
-    "mtime": 1785486570.3332586,
-    "ast_hash": "3d20068fdc12ecb553f129e38323de1b",
-    "semantic_hash": "3d20068fdc12ecb553f129e38323de1b"
+    "mtime": 1785489406.3634057,
+    "ast_hash": "0b382df9c15603f665fed00bd0d1bef7",
+    "semantic_hash": "0b382df9c15603f665fed00bd0d1bef7"
   },
   "src/lib/excuse/client.test.ts": {
     "mtime": 1785486570.3342588,
@@ -120,9 +120,9 @@
     "semantic_hash": "7d50e2904681a2c8dfec05aff4ad7b2a"
   },
   "tsconfig.json": {
-    "mtime": 1785432653.6508763,
-    "ast_hash": "0a2f4ed9289b65cd3feb4fb4ab3a4fcd",
-    "semantic_hash": "0a2f4ed9289b65cd3feb4fb4ab3a4fcd"
+    "mtime": 1785489454.705474,
+    "ast_hash": "2126014e3ad6824c54bc4e40fe763a64",
+    "semantic_hash": "2126014e3ad6824c54bc4e40fe763a64"
   },
   "vitest.config.ts": {
     "mtime": 1785432653.6508763,
@@ -165,9 +165,9 @@
     "semantic_hash": "7fcf7d15e75e528b172cd61a285fcf51"
   },
   "src/lib/config.test.ts": {
-    "mtime": 1785486570.3332586,
-    "ast_hash": "9acf185604ca952c5fb287caa60cfde1",
-    "semantic_hash": "9acf185604ca952c5fb287caa60cfde1"
+    "mtime": 1785489376.033105,
+    "ast_hash": "4d1fff45cfe507c52381ae2ffd7ebcaa",
+    "semantic_hash": "4d1fff45cfe507c52381ae2ffd7ebcaa"
   },
   "docs/design-brief.md": {
     "mtime": 1785488339.3758771,
